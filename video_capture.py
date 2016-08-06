@@ -1,5 +1,5 @@
 import numpy as np
-#from pyo import *
+from pyo import *
 import cv2
 import imutils
 
@@ -9,6 +9,14 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 scale_factor = 1200
 gray = cv2.COLOR_BGR2GRAY
 frame = None
+
+# pyo Setup
+pyoServer = Server().boot()
+pyoServer.start()
+pyoServer.gui(locals())
+
+mod = Sine(freq=4, mul=50)
+sin = Sine(freq=mod + 880, mul = 0.2).out()
 
 # capture the first frame for motion tracking reference
 firstFrame = None
@@ -36,6 +44,7 @@ while True:
     mean = np.mean(mean)
 
     scaled_mean = np.absolute(mean / scale_factor)
+    pyoUpdate(scaled_mean)
     
     cv2.putText(frame, str(scaled_mean), (10,500), font, 1, (255,255,255), 2)
     cv2.imshow('frame', frame)
@@ -47,3 +56,4 @@ while True:
 
 camera.release()
 cv2.destroyAllWindows()
+pyoServer.stop()
